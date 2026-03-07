@@ -1,2 +1,2 @@
-# powershell-scripts
-A collection of personal powershell scripts.
+# mimir-archive
+A collection of personal scripts.
