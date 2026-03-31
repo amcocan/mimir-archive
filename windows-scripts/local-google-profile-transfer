@@ -1,0 +1,43 @@
+# Check and run script with elevated permissions.
+if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+    Start-Process -FilePath "powershell.exe" -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs
+    exit
+}
+
+# Set the default UI title, foreground, and background.
+$host.UI.RawUI.WindowTitle = "Local Google Profile Transfer"
+$host.UI.RawUI.BackgroundColor = "Black"
+$host.UI.RawUI.ForegroundColor = "Gray"
+
+# Set colors for Pass, Warn and Fail conditions.
+$passColor = "Green"
+$warnColor = "Yellow"
+$failColor = "Red"
+
+# Check for "lgp-transfer.log" and create or reset it.
+$logFile = Join-Path -Path (Split-Path -Parent $PSCommandPath) -ChildPath "lgp-transfer.log"
+if (Test-Path -Path $logFile) {
+    Clear-Content -Path $logFile
+} else {
+    New-Item -Path $logFile -ItemType File | Out-Null
+}
+
+# Log very verbosely every action the script does and all the error messages that can or will be returned.
+$transcriptPath = $logFile
+Start-Transcript -Path $transcriptPath -Append | Out-Null
+
+# Wait for user input before closing the script on fail or error
+$ErrorActionPreference = "Stop"
+
+try {
+    # Script logic will go here. Need to add this next.
+
+} catch {
+    # Upon script error, wait for user input.
+    Write-Host "`n An error occurred: $_" -ForegroundColor $failColor
+    Read-Host " Press Enter to exit..."
+}
+
+# Upon script completion, wait for user input.
+Write-Host "`n Script completed successfully." -ForegroundColor $passColor
+Read-Host " Press Enter to exit..."
